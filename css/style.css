@@ -3456,7 +3456,7 @@ footer .copyright p{
 /* Fix for screens smaller than 400px */
 @media screen and (max-width: 400px) {
   .home {
-    padding-top: 4rem;
+    padding-top: 20rem;
     justify-content: flex-start;
   }
 }
