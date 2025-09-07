@@ -685,27 +685,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // =================== PRELOADER SCRIPT ===================
- window.addEventListener('load', () => {
-     const preloader = document.querySelector('.preloader');
-     const contentWrapper = document.querySelector('.content-wrapper');
+// Switched from 'load' to 'DOMContentLoaded' to show content faster
+document.addEventListener('DOMContentLoaded', () => {
+    const preloader = document.querySelector('.preloader');
+    const contentWrapper = document.querySelector('.content-wrapper');
 
-     if (preloader) {
-         // Wait for the text animation to finish plus a small delay
-         setTimeout(() => {
-             preloader.classList.add('fade-out');
-            
-             // Show the main content
-             if (contentWrapper) {
-                contentWrapper.classList.add('loaded');
-             }
+    if (preloader) {
+        // This timeout should match your CSS animation duration
+        setTimeout(() => {
+            preloader.classList.add('fade-out');
+           
+            // Show the main content
+            if (contentWrapper) {
+               contentWrapper.classList.add('loaded');
+            }
 
-             // Remove the preloader from the DOM after it fades out
-             setTimeout(() => {
-                 preloader.style.display = 'none';
-            }, 750); 
-        }, 2000); // Should be slightly longer than the CSS animation
-     }
- });
+            // Remove the preloader from the DOM after it fades out
+            setTimeout(() => {
+                preloader.style.display = 'none';
+           }, 750); 
+       }, 1500); 
+    }
+});
 
 
 // =================== DARK/LIGHT THEME (FINAL CORRECTED VERSION) ===================
