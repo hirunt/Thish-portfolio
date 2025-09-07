@@ -2178,7 +2178,7 @@ footer .copyright p{
   
   
   .home {
-    padding: 2rem 1rem;
+    padding: 5rem 1rem 2rem; 
     min-height: 100vh;
     display: flex;
     flex-direction: column;
