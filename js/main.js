@@ -70,27 +70,6 @@ window.addEventListener('click', (e) => {
     }
 });
 
-// Dark/Light Theme
-const themeBtn = document.querySelector(".theme-btn");
-
-themeBtn.addEventListener("click",() => {
-    document.body.classList.toggle("dark-theme");
-    themeBtn.classList.toggle("sun");
-    localStorage.setItem("saved-theme", getCurrentTheme());
-    localStorage.setItem("saved-icon", getCurrentIcon());
-});
-
-const getCurrentTheme = () => document.body.classList.contains("dark-theme") ? "dark" : "light";
-const getCurrentIcon = () => themeBtn.classList.contains("sun") ? "sun" : "moon";
-
-const savedTheme = localStorage.getItem("saved-theme");
-const savedIcon = localStorage.getItem("saved-icon");
-
-if(savedTheme){
-    document.body.classList[savedTheme === "dark" ? "add" : "remove"]("dark-theme");
-    themeBtn.classList[savedIcon === "sun" ? "add" : "remove"]("sun");
-}
-
 // Scroll to top button
 const scrollTopBtn = document.querySelector(".scrollToTop-btn");
 
@@ -169,8 +148,6 @@ function clearPhrase() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", typePhrase);
-
 // Greeting
 function getGreeting() {
     const now = new Date();
@@ -189,7 +166,10 @@ function getGreeting() {
         icon = '<i class="fas fa-moon greeting-icon"></i>';
     }
 
-    document.getElementById('greeting').innerHTML = icon + '  ' + greeting;
+    const greetingEl = document.getElementById('greeting');
+    if(greetingEl) {
+      greetingEl.innerHTML = icon + '  ' + greeting;
+    }
 }
 
 window.onload = getGreeting;
@@ -209,7 +189,9 @@ const initTabSystem = (containerId) => {
 
             // Activate the clicked tab and corresponding content
             tab.classList.add('qualification__active');
-            target.classList.add('qualification__active');
+            if (target) {
+                target.classList.add('qualification__active');
+            }
         });
     });
 };
@@ -370,11 +352,9 @@ document.addEventListener("DOMContentLoaded", () => {
     typePhrase(); 
     getGreeting();
     updateActiveLink();
-
     
     initTabSystem('journey');
     initTabSystem('highlights');
-
 });
 
 // Our clients - Swiper initialization
@@ -436,31 +416,33 @@ const popupCloseBtn = document.querySelector('.popup-close-btn');
 // --- IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL HERE ---
 const scriptURL = 'https://script.google.com/macros/s/AKfycbyr7Cm26u5_PlmboyDF96SAgTBJRAh_vwPPdYGJfa2v5zWd5EMDfFC2pbXVoFGtO66Vog/exec'; 
 
-contactForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const submitBtn = contactForm.querySelector('button[type="submit"]');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = 'Sending...';
-
-  fetch(scriptURL, { method: 'POST', body: new FormData(contactForm) })
-    .then(response => response.json())
-    .then(data => {
-      if (data.result === 'success') {
-        showPopup('success', 'Message Sent!', 'Thank you for contacting me. I will get back to you shortly.');
-        contactForm.reset();
-      } else {
-        throw new Error(data.error || 'Unknown error occurred.');
-      }
-    })
-    .catch(error => {
-      showPopup('error', 'Submission Failed', 'Something went wrong. Please try again later.');
-      console.error('Error!', error.message);
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send Message <i class="fas fa-paper-plane"></i>';
-    });
-});
+if (contactForm) {
+  contactForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Sending...';
+  
+    fetch(scriptURL, { method: 'POST', body: new FormData(contactForm) })
+      .then(response => response.json())
+      .then(data => {
+        if (data.result === 'success') {
+          showPopup('success', 'Message Sent!', 'Thank you for contacting me. I will get back to you shortly.');
+          contactForm.reset();
+        } else {
+          throw new Error(data.error || 'Unknown error occurred.');
+        }
+      })
+      .catch(error => {
+        showPopup('error', 'Submission Failed', 'Something went wrong. Please try again later.');
+        console.error('Error!', error.message);
+      })
+      .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Send Message <i class="fas fa-paper-plane"></i>';
+      });
+  });
+}
 
 function showPopup(status, title, message) {
   popupTitle.textContent = title;
@@ -477,8 +459,8 @@ function closePopup() {
   popup.classList.remove('active');
 }
 
-popupOkBtn.addEventListener('click', closePopup);
-popupCloseBtn.addEventListener('click', closePopup);
+if(popupOkBtn) popupOkBtn.addEventListener('click', closePopup);
+if(popupCloseBtn) popupCloseBtn.addEventListener('click', closePopup);
 
 
 // Responsive navigation menu toggle
@@ -489,16 +471,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const navItems = document.querySelectorAll(".nav-items a");
 
     const closeMenu = () => {
+      if(navigation) {
         navigation.classList.remove("active");
         document.body.style.overflow = "auto";
-        // After closing, trigger a scroll event to update the active link correctly
         window.dispatchEvent(new Event('scroll'));
+      }
     };
 
     const openMenu = () => {
+      if(navigation) {
         navigation.classList.add("active");
         document.body.style.overflow = "hidden";
-        // Immediately set "Home" to active and remove from others
         navItems.forEach(link => {
             link.classList.remove('active');
         });
@@ -506,6 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (homeLink) {
             homeLink.classList.add('active');
         }
+      }
     };
 
     if (menuBtn && closeBtn && navigation && navItems.length > 0) {
@@ -523,13 +507,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// Crie uma função para manipular a visibilidade das seções de habilidades
+// Handle skills visibility on different screen sizes
 const handleSkillsVisibility = () => {
   const skillsContent = document.querySelectorAll('.skills__content');
-
-  // Verifique se a largura da tela é menor ou igual a 768 pixels (típico para dispositivos móveis)
   if (window.innerWidth <= 768) {
-    // Feche todas as seções de habilidades, exceto a primeira
     skillsContent.forEach((skill, index) => {
       if (index !== 0) {
         skill.classList.remove('skills__open');
@@ -538,91 +519,45 @@ const handleSkillsVisibility = () => {
       }
     });
   } else {
-    // Abra todas as seções de habilidades para telas maiores
     skillsContent.forEach(skill => {
       skill.classList.add('skills__open');
     });
   }
 };
 
-// Execute a função quando o DOM for totalmente carregado e quando a janela for redimensionada
 document.addEventListener('DOMContentLoaded', handleSkillsVisibility);
 window.addEventListener('resize', handleSkillsVisibility);
 
 
 // =================== SCROLL REVEAL ANIMATION ===================
 document.addEventListener("DOMContentLoaded", () => {
-    const sr = ScrollReveal({
-        origin: 'top',
-        distance: '60px',
-        duration: 2000,
-        delay: 50,
-        viewFactor: 0.2, // Triggers animations sooner
-        reset: false // Animations will only play once
-    });
-
-    // --- General Elements ---
-    sr.reveal('.section-title-01, .section-title-02', { delay: 200 });
-
-    // --- Home Section ---
-    sr.reveal('.home-container .info', { origin: 'left' });
-    sr.reveal('.home-container .home-img', { origin: 'right' });
-    sr.reveal('.home .scroll-down', { origin: 'bottom', delay: 1200 });
-    sr.reveal('.home .media-icons a', { origin: 'left', interval: 200, delay: 800 });
-
-    // --- About Section ---
-    sr.reveal('.about-img', { origin: 'left' });
-    sr.reveal('.about-info', { origin: 'right' });
-
-    // --- Skills Section (Animation Adjusted) ---
-    sr.reveal('.skills__content', { origin: 'bottom', interval: 200 });
-
-    // --- Journey & Highlights ---
-    sr.reveal('.qualification__tabs .qualification__button', { interval: 150 });
-    // sr.reveal('.certificate-card', { origin: 'bottom', interval: 150 });
-
-    // --- Services Section ---
-    sr.reveal('.service-card', { origin: 'bottom', interval: 200 });
-
-    // --- Portfolio Section ---
-    sr.reveal('.portfolio-filter-btns .filter-btn', { interval: 100 });
-    // sr.reveal('.img-card-container', { origin: 'bottom', interval: 150 });
-
-    // --- Testimonials & Contact ---
-    sr.reveal('.client-swiper', { origin: 'bottom' });
-    sr.reveal('.contact-left', { origin: 'left' });
-    sr.reveal('.contact-right', { origin: 'right' });
-    sr.reveal('.get-in-touch', { origin: 'bottom' });
-
+    if(typeof ScrollReveal !== 'undefined') {
+        const sr = ScrollReveal({
+            origin: 'top',
+            distance: '60px',
+            duration: 2000,
+            delay: 50,
+            viewFactor: 0.2,
+            reset: false 
+        });
+    
+        sr.reveal('.section-title-01, .section-title-02', { delay: 200 });
+        sr.reveal('.home-container .info', { origin: 'left' });
+        sr.reveal('.home-container .home-img', { origin: 'right' });
+        sr.reveal('.home .scroll-down', { origin: 'bottom', delay: 1200 });
+        sr.reveal('.home .media-icons a', { origin: 'left', interval: 200, delay: 800 });
+        sr.reveal('.about-img', { origin: 'left' });
+        sr.reveal('.about-info', { origin: 'right' });
+        sr.reveal('.skills__content', { origin: 'bottom', interval: 200 });
+        sr.reveal('.qualification__tabs .qualification__button', { interval: 150 });
+        sr.reveal('.service-card', { origin: 'bottom', interval: 200 });
+        sr.reveal('.portfolio-filter-btns .filter-btn', { interval: 100 });
+        sr.reveal('.client-swiper', { origin: 'bottom' });
+        sr.reveal('.contact-left', { origin: 'left' });
+        sr.reveal('.contact-right', { origin: 'right' });
+        sr.reveal('.get-in-touch', { origin: 'bottom' });
+    }
 });
-
-
-// =================== SKILL BAR ANIMATION ON SCROLL ===================
-const skillsSection = document.getElementById('skills');
-const progressBars = document.querySelectorAll('.skill-percentage');
-
-const animateProgressBars = () => {
-    progressBars.forEach(bar => {
-        const targetWidth = bar.style.width; // The width is already in the HTML style attribute
-        bar.style.width = targetWidth; // Re-apply to trigger the transition
-    });
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            animateProgressBars();
-            observer.unobserve(entry.target); // Stop observing once animated
-        }
-    });
-}, {
-    threshold: 0.5 // Trigger when 50% of the section is visible
-});
-
-if (skillsSection) {
-    observer.observe(skillsSection);
-}
-
 
 // =================== SKILL BAR ANIMATION ON SCROLL & MODAL OPEN ===================
 document.addEventListener("DOMContentLoaded", () => {
@@ -632,7 +567,6 @@ document.addEventListener("DOMContentLoaded", () => {
         progressBars.forEach(bar => {
             const targetWidth = bar.getAttribute('data-width');
             if (targetWidth) {
-                // Use a timeout to ensure the CSS transition applies correctly
                 setTimeout(() => {
                     bar.style.width = targetWidth;
                 }, 100);
@@ -642,20 +576,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Use an Intersection Observer to animate the main skill bars when they scroll into view
     const skillCards = document.querySelectorAll('.skill-card');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateProgressBars(entry.target);
-                observer.unobserve(entry.target); // Animate only once
-            }
-        });
-    }, {
-        threshold: 0.5 // Trigger when 50% of the card is visible
-    });
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                  animateProgressBars(entry.target);
+                  observer.unobserve(entry.target); // Animate only once
+              }
+          });
+      }, {
+          threshold: 0.5 
+      });
+  
+      skillCards.forEach(card => {
+          observer.observe(card);
+      });
+    }
 
-    skillCards.forEach(card => {
-        observer.observe(card);
-    });
 
     // Animate progress bars inside modals when they are opened
     const skillModals = document.querySelectorAll(".skill-modal");
@@ -664,43 +601,32 @@ document.addEventListener("DOMContentLoaded", () => {
     skillOpenBtns.forEach((btn, index) => {
         btn.addEventListener("click", () => {
             const modal = skillModals[index]; 
-            // Check if the modal has already been animated
             if (modal && !modal.classList.contains('animated')) {
-                // Reset the bars to 0 before animating
                 const progressBarsInModal = modal.querySelectorAll('.skill-percentage, .skills__percentage');
                 progressBarsInModal.forEach(bar => {
                     bar.style.width = '0';
                 });
 
-                // Animate the bars after the modal is visible
                 setTimeout(() => {
                     animateProgressBars(modal);
-                    // Add a class to prevent future animations
                     modal.classList.add('animated'); 
-                }, 200); // Delay matches modal transition time
+                }, 200); 
             }
         });
     });
 });
 
-
 // =================== PRELOADER SCRIPT ===================
-// Switched from 'load' to 'DOMContentLoaded' to show content faster
 document.addEventListener('DOMContentLoaded', () => {
     const preloader = document.querySelector('.preloader');
     const contentWrapper = document.querySelector('.content-wrapper');
 
     if (preloader) {
-        // This timeout should match your CSS animation duration
         setTimeout(() => {
             preloader.classList.add('fade-out');
-           
-            // Show the main content
             if (contentWrapper) {
                contentWrapper.classList.add('loaded');
             }
-
-            // Remove the preloader from the DOM after it fades out
             setTimeout(() => {
                 preloader.style.display = 'none';
            }, 750); 
@@ -708,42 +634,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
 // =================== DARK/LIGHT THEME (FINAL CORRECTED VERSION) ===================
 document.addEventListener("DOMContentLoaded", () => {
     const themeBtn = document.querySelector(".theme-btn");
 
-    // Function to apply the theme and update the button icon
     const applyTheme = (theme) => {
+        const htmlElement = document.documentElement;
         if (theme === 'dark') {
-            document.documentElement.classList.add("dark-theme");
+            htmlElement.classList.add("dark-theme");
             if (themeBtn) themeBtn.classList.add("sun");
         } else {
-            document.documentElement.classList.remove("dark-theme");
+            htmlElement.classList.remove("dark-theme");
             if (themeBtn) themeBtn.classList.remove("sun");
         }
     };
 
-    // 1. Set the initial theme on page load
     const savedTheme = localStorage.getItem("saved-theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
     if (savedTheme) {
-        applyTheme(savedTheme); // Use saved theme if it exists
+        applyTheme(savedTheme);
     } else {
-        applyTheme(prefersDark ? "dark" : "light"); // Otherwise, use system preference
+        applyTheme(prefersDark ? "dark" : "light");
     }
 
-    // 2. Add click listener for the manual theme switcher button
     if (themeBtn) {
         themeBtn.addEventListener("click", () => {
             const isDark = document.documentElement.classList.contains("dark-theme");
             const newTheme = isDark ? "light" : "dark";
             
-            // Save the user's manual choice to local storage
             localStorage.setItem("saved-theme", newTheme); 
             
-            // Apply the new theme
             applyTheme(newTheme);
         });
     }
