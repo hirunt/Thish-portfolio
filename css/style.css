@@ -3464,7 +3464,7 @@ footer .copyright p{
 /* Specific fix for tall and narrow screens like Xiaomi 9T */
 @media screen and (max-width: 420px) and (min-height: 700px) {
   .home {
-    padding-top: 5rem;
+    padding-top: 4rem;
     justify-content: flex-start;
   }
 }
