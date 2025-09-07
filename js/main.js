@@ -565,6 +565,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // =================== CORRECTED NAVIGATION & SCROLLSPY LOGIC ===================
 document.addEventListener("DOMContentLoaded", () => {
+    // --- Initialize Tab Systems for Journey and Highlights ---
+    initTabSystem('journey');
+    initTabSystem('highlights');
+
     // --- Elements ---
     const menuBtn = document.querySelector(".nav-menu-btn");
     const closeBtn = document.querySelector(".nav-close-btn");
@@ -603,7 +607,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflow = "hidden";
         updateActiveLink(); // Ensure correct link is active when menu opens
     };
-    
+
     // --- Event Listeners ---
     if (menuBtn && closeBtn && navigation) {
         menuBtn.addEventListener("click", openMenu);
