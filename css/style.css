@@ -2177,8 +2177,8 @@ footer .copyright p{
   }
   
   
-  .home {
-    padding: 5rem 1rem 2rem; 
+.home {
+    padding: 6rem 1rem 2rem; /* Increased top padding to push content down */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -2190,6 +2190,7 @@ footer .copyright p{
     text-align: center;
     gap: 2rem;
     width: 100%;
+    margin-top: 0; /* Removed fixed margin to rely on padding */
   }
   
   .home-container .home-img {
@@ -3450,4 +3451,12 @@ footer .copyright p{
     to {
         stroke-dashoffset: 0;
     }
+}
+
+/* Fix for screens smaller than 400px */
+@media screen and (max-width: 400px) {
+  .home {
+    padding-top: 4rem;
+    justify-content: flex-start;
+  }
 }
