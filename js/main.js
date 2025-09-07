@@ -82,45 +82,6 @@ scrollTopBtn.addEventListener("click", () => {
     document.documentElement.scrollTop = 0;
 });
 
-// Responsive navigation menu toggle
-const menuBtn = document.querySelector(".nav-menu-btn");
-const closeBtn = document.querySelector(".nav-close-btn");
-const navigation = document.querySelector(".navigation");
-const navItems = document.querySelectorAll(".nav-items a"); // Get nav links for mobile menu close
-
-// Check if elements exist before adding event listeners
-if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
-        navigation.classList.add("active");
-        document.body.style.overflow = "hidden"; // Prevent background scrolling
-    });
-}
-
-if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-        navigation.classList.remove("active");
-        document.body.style.overflow = "auto"; // Restore scrolling
-    });
-}
-
-navItems.forEach((navItem) => {
-    navItem.addEventListener("click", () => {
-        navigation.classList.remove("active");
-        document.body.style.overflow = "auto"; // Restore scrolling
-    });
-});
-
-// Close mobile menu when clicking outside
-if (navigation) {
-    navigation.addEventListener("click", (e) => {
-        if (e.target === navigation) {
-            navigation.classList.remove("active");
-            document.body.style.overflow = "auto"; // Restore scrolling
-        }
-    });
-}
-
-
 // Typing effect
 const phrases = ["Web Developer", "Fullstack Developer", "ICT Tutor", "Freelancer", "Tech Enthusiast"];
 let currentPhrase = 0;
@@ -287,75 +248,7 @@ window.addEventListener("click", (e) => {
 });
 // =================== END OF UNIFIED MODAL LOGIC ===================
 
-// Consolidated Navigation, Scrollspy, and Startup Logic
-document.addEventListener("DOMContentLoaded", () => {
-    // --- Elements ---
-    const menuBtn = document.querySelector(".nav-menu-btn");
-    const closeBtn = document.querySelector(".nav-close-btn");
-    const navigation = document.querySelector(".navigation");
-    const navLinks = document.querySelectorAll(".nav-items a");
-    const sections = document.querySelectorAll("section[id]");
-    const header = document.querySelector("header");
 
-    // --- Menu Toggle Functions ---
-    const closeMenu = () => {
-        if(navigation) {
-            navigation.classList.remove("active");
-        }
-        document.body.style.overflow = "auto";
-    };
-
-    const openMenu = () => {
-        if(navigation) {
-            navigation.classList.add("active");
-        }
-        document.body.style.overflow = "hidden";
-    };
-
-    // --- Scrollspy Function ---
-    const updateActiveLink = () => {
-        const scrollY = window.scrollY;
-        
-        sections.forEach(current => {
-            const sectionHeight = current.offsetHeight;
-            const sectionTop = current.offsetTop - 50; // Adjusted offset
-            let sectionId = current.getAttribute("id");
-
-            const link = document.querySelector(".nav-items a[href*=" + sectionId + "]");
-            if (link) {
-                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-                    link.classList.add("active");
-                } else {
-                    link.classList.remove("active");
-                }
-            }
-        });
-    };
-    
-    // --- Event Listeners ---
-    if (menuBtn && closeBtn && navigation && navLinks.length > 0) {
-        menuBtn.addEventListener("click", openMenu);
-        closeBtn.addEventListener("click", closeMenu);
-        navLinks.forEach(link => {
-            link.addEventListener("click", closeMenu);
-        });
-        navigation.addEventListener("click", (e) => {
-            if (e.target === navigation) {
-                closeMenu();
-            }
-        });
-    }
-
-    window.addEventListener("scroll", updateActiveLink);
-    
-    // --- Initial Calls on Page Load ---
-    typePhrase(); 
-    getGreeting();
-    updateActiveLink();
-    
-    initTabSystem('journey');
-    initTabSystem('highlights');
-});
 
 // Our clients - Swiper initialization
 var swiper = new Swiper(".client-swiper", {
@@ -668,4 +561,67 @@ document.addEventListener("DOMContentLoaded", () => {
             applyTheme(newTheme);
         });
     }
+});
+
+// =================== CORRECTED NAVIGATION & SCROLLSPY LOGIC ===================
+document.addEventListener("DOMContentLoaded", () => {
+    // --- Elements ---
+    const menuBtn = document.querySelector(".nav-menu-btn");
+    const closeBtn = document.querySelector(".nav-close-btn");
+    const navigation = document.querySelector(".navigation");
+    const navLinks = document.querySelectorAll(".nav-items a");
+    const sections = document.querySelectorAll("section[id]");
+
+    // --- Scrollspy Function ---
+    const updateActiveLink = () => {
+        const scrollY = window.scrollY;
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 60; // Offset for fixed header
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            const navLink = document.querySelector(`.nav-items a[href*="${sectionId}"]`);
+
+            if (navLink) {
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    navLink.classList.add('active');
+                } else {
+                    navLink.classList.remove('active');
+                }
+            }
+        });
+    };
+
+    // --- Menu Toggle Functions ---
+    const closeMenu = () => {
+        if (navigation) navigation.classList.remove("active");
+        document.body.style.overflow = "auto";
+    };
+
+    const openMenu = () => {
+        if (navigation) navigation.classList.add("active");
+        document.body.style.overflow = "hidden";
+        updateActiveLink(); // Ensure correct link is active when menu opens
+    };
+    
+    // --- Event Listeners ---
+    if (menuBtn && closeBtn && navigation) {
+        menuBtn.addEventListener("click", openMenu);
+        closeBtn.addEventListener("click", closeMenu);
+        navLinks.forEach(link => {
+            link.addEventListener("click", closeMenu);
+        });
+        navigation.addEventListener("click", (e) => {
+            if (e.target === navigation) {
+                closeMenu();
+            }
+        });
+    }
+
+    // --- Attach Scroll Listener & Initial Call ---
+    window.addEventListener("scroll", updateActiveLink);
+    // --- Initial Calls on Page Load ---
+    typePhrase();
+    getGreeting();
+    updateActiveLink();
 });
