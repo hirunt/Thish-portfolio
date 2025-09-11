@@ -527,43 +527,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// =================== DARK/LIGHT THEME (FINAL CORRECTED VERSION) ===================
-document.addEventListener("DOMContentLoaded", () => {
-    const themeBtn = document.querySelector(".theme-btn");
+// =================== THEME: ===================
+(function(){
+    const storageKey = 'saved-theme';
+    const htmlEl = document.documentElement;
+    const themeBtn = document.querySelector('.theme-btn');
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
 
     const applyTheme = (theme) => {
-        const htmlElement = document.documentElement;
         if (theme === 'dark') {
-            htmlElement.classList.add("dark-theme");
-            if (themeBtn) themeBtn.classList.add("sun");
+            htmlEl.classList.add('dark-theme');
+            if (themeBtn) themeBtn.classList.add('sun');
         } else {
-            htmlElement.classList.remove("dark-theme");
-            if (themeBtn) themeBtn.classList.remove("sun");
+            htmlEl.classList.remove('dark-theme');
+            if (themeBtn) themeBtn.classList.remove('sun');
         }
     };
 
-    const savedTheme = localStorage.getItem("saved-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // Initialize immediately to avoid flash of wrong theme
+    const initTheme = () => {
+        const saved = localStorage.getItem(storageKey);
+        if (saved === 'dark' || saved === 'light') {
+            applyTheme(saved);
+        } else {
+            applyTheme(mql.matches ? 'dark' : 'light');
+        }
+    };
 
-    if (savedTheme) {
-        applyTheme(savedTheme);
-    } else {
-        applyTheme(prefersDark ? "dark" : "light");
+    initTheme();
+
+    // React to system theme changes only if the user hasn't set a preference
+    const onSystemChange = (e) => {
+        if (!localStorage.getItem(storageKey)) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    };
+
+    if (typeof mql.addEventListener === 'function') {
+        mql.addEventListener('change', onSystemChange);
+    } else if (typeof mql.addListener === 'function') {
+        mql.addListener(onSystemChange);
     }
 
-    if (themeBtn) {
-        themeBtn.addEventListener("click", () => {
-            const isDark = document.documentElement.classList.contains("dark-theme");
-            const newTheme = isDark ? "light" : "dark";
-            
-            localStorage.setItem("saved-theme", newTheme); 
-            
+    // Wire up the toggle button (bind on DOMContentLoaded if the button isn't present yet)
+    const bindToggle = () => {
+        const btn = themeBtn || document.querySelector('.theme-btn');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+            const isDark = htmlEl.classList.contains('dark-theme');
+            const newTheme = isDark ? 'light' : 'dark';
+            localStorage.setItem(storageKey, newTheme);
             applyTheme(newTheme);
         });
-    }
-});
+    };
 
-// =================== CORRECTED NAVIGATION & SCROLLSPY LOGIC ===================
+    if (themeBtn) {
+        bindToggle();
+    } else {
+        document.addEventListener('DOMContentLoaded', bindToggle);
+    }
+})();
+
+
 document.addEventListener("DOMContentLoaded", () => {
     // --- Initialize Tab Systems for Journey and Highlights ---
     initTabSystem('journey');
@@ -605,10 +630,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const openMenu = () => {
         if (navigation) navigation.classList.add("active");
         document.body.style.overflow = "hidden";
-        updateActiveLink(); // Ensure correct link is active when menu opens
+        updateActiveLink(); 
     };
 
-    // --- Event Listeners ---
     if (menuBtn && closeBtn && navigation) {
         menuBtn.addEventListener("click", openMenu);
         closeBtn.addEventListener("click", closeMenu);
@@ -622,9 +646,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- Attach Scroll Listener & Initial Call ---
+
     window.addEventListener("scroll", updateActiveLink);
-    // --- Initial Calls on Page Load ---
+
     typePhrase();
     getGreeting();
     updateActiveLink();

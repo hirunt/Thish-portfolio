@@ -3396,7 +3396,6 @@ footer .copyright p{
 }
 
 
-/* ========== UPDATED PRELOADER AND CONTENT WRAPPER STYLES ========== */
 
 .content-wrapper {
     visibility: hidden;
@@ -3453,7 +3452,6 @@ footer .copyright p{
     }
 }
 
-/* Fix for screens smaller than 400px */
 @media screen and (max-width: 400px) {
   .home {
     padding-top: 4rem;
@@ -3461,7 +3459,6 @@ footer .copyright p{
   }
 }
 
-/* Specific fix for tall and narrow screens like Xiaomi 9T */
 @media screen and (max-width: 420px) and (min-height: 700px) {
   .home {
     padding-top: 4rem;
